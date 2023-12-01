@@ -151,7 +151,7 @@ class Dev(Configuration):
 
     DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-    LELUCHAT_AUTH_URL = values.Value('http://auth:8000/v1/accounts/remote-auth/')
+    LELUCHAT_AUTH_URL = values.Value('http://auth:8000/v1/accounts/remote-authenticate/')
 
 
 class Prod(Dev):

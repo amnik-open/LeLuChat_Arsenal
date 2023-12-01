@@ -1,5 +1,13 @@
 """Utility for remote authentication class"""
+from enum import Enum
 import requests
+
+
+class RemoteUserType(Enum):
+    """Enum for types of users in leluchat_auth"""
+
+    LeluUser = 0
+    WebsiteUser = 1
 
 
 class RemoteUser:
@@ -14,7 +22,11 @@ class RemoteUser:
 
     @property
     def type(self):
-        return self.data["type"]
+        type = self.data["type"]
+        if type != RemoteUserType.LeluUser.name and type != RemoteUserType.WebsiteUser.name:
+            raise ValueError(f"{type} type is not supported")
+        return type
+
 
     @property
     def uuid(self):

@@ -2,8 +2,9 @@
 import logging
 from rest_framework import authentication
 from rest_framework import exceptions
-from arsenal.remote_authentication import RemoteAuthClient
 from django.conf import settings
+from arsenal.remote_authentication import RemoteAuthClient
+
 
 log = logging.getLogger(__name__)
 
@@ -15,5 +16,5 @@ class RemoteAuthentication(authentication.BaseAuthentication):
             user = RemoteAuthClient.get_remote_user(settings.LELUCHAT_AUTH_URL, request.headers)
         except Exception as e:
             log.exception(e)
-            raise exceptions.AuthenticationFailed('Remote Authentication failed')
+            raise exceptions.AuthenticationFailed('Authentication failed')
         return (user, None)

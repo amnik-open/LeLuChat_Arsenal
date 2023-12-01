@@ -45,6 +45,12 @@ class Dev(Configuration):
         'arsenal',
     ]
 
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+            'arsenal.authentication.RemoteAuthentication',
+        ]
+    }
+
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -144,6 +150,8 @@ class Dev(Configuration):
     # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
     DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+    LELUCHAT_AUTH_URL = values.Value('http://auth:8000/v1/accounts/remote-auth/')
 
 
 class Prod(Dev):

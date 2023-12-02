@@ -1,6 +1,6 @@
 """Define serializers for arsenal app"""
 from rest_framework import serializers
-from arsenal.models import Room, Membership
+from arsenal.models import Room, Membership, Chat
 
 
 class MembershipSerializer(serializers.ModelSerializer):
@@ -36,3 +36,31 @@ class RoomSerializerDetail(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ["uuid", "url", "name", 'members']
+
+class ChatListSerializer(serializers.ModelSerializer):
+    """Define serializer for chat model"""
+
+    owner = serializers.UUIDField()
+    chat_uuid = serializers.UUIDField(read_only=True)
+
+    class Meta:
+        model = Chat
+        fields = ['chat_uuid', 'name', 'owner', 'start_time']
+
+    def create(self, validated_data):
+        return Chat.objects.create(room=validated_data['room'], owner=validated_data['owner'],
+                                   name=validated_data['name'])
+
+class ChatDetailSerializer(serializers.ModelSerializer):
+    """Define serializer for Chat detail"""
+
+    owner = serializers.UUIDField()
+    chat_uuid = serializers.UUIDField(read_only=True)
+    auth_token = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Chat
+        fields = ['owner', 'chat_uuid', 'name', 'auth_token', 'start_time']
+
+    def get_auth_token(self, obj):
+        return self.context.get('auth_token')

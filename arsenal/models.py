@@ -77,3 +77,21 @@ class Membership(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['room', 'member_uuid'], name='unique membership')
         ]
+
+class ChatManager(models.Manager):
+    """Manager for Chat model"""
+
+    def create(self, room, owner, name):
+        chat = Chat(room=room, owner=owner, name=name)
+        chat.save()
+        return chat
+
+
+class Chat(models.Model):
+    """Define Chat model"""
+
+    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, related_name='chats')
+    owner = models.UUIDField(unique=True)
+    name = models.CharField(max_length=200)
+    chat_uuid = models.UUIDField(unique=True, default=uuid.uuid4)
+    start_time = models.DateTimeField(auto_now_add=True)

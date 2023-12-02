@@ -69,7 +69,7 @@ class Dev(Configuration):
         },
         "root": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
         },
     }
 
@@ -152,6 +152,18 @@ class Dev(Configuration):
     DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
     LELUCHAT_AUTH_URL = values.Value('http://auth:8000/v1/accounts/remote-authenticate/')
+
+    RABBITMQ = values.DictValue({
+        'default': {
+            'HOST': 'rabbitmq',
+            'PORT': '5672',
+            'VIRTUAL_HOST': '/',
+            'USER': 'user',
+            'PASSWORD': 'password',
+        }
+    })
+
+    DEFAULT_PREFIX_CHAT_NAME = values.Value('user')
 
 
 class Prod(Dev):

@@ -4,7 +4,7 @@ networks:
       external: true
 services:
   arsenal:
-    build: .
+    image: leluchat_auth-auth
     command: python manage.py runserver 0.0.0.0:8001
     container_name: leluchat_arsenal
     volumes:

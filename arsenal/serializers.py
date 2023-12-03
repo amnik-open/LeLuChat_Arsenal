@@ -30,12 +30,29 @@ class RoomSerializerList(serializers.ModelSerializer):
 class RoomSerializerDetail(serializers.ModelSerializer):
     """Detail serializer for Room model"""
 
-    members = MembershipSerializer(many=True, source="membership")
+    members = MembershipSerializer(many=True, source="memberships")
     uuid = serializers.UUIDField(source='room_uuid', read_only=True)
 
     class Meta:
         model = Room
         fields = ["uuid", "url", "name", 'members']
+
+
+class RoomMembershipSerializer(serializers.ModelSerializer):
+    """Define serializer for membership of Room model"""
+
+    members = MembershipSerializer(many=True, source="memberships")
+
+    class Meta:
+        model = Room
+        fields = ["members"]
+
+    def update(self, room, validated_data):
+        print(validated_data)
+        return Room.objects.update_members(room=room,
+                                           members=validated_data['memberships'],
+                                           add=validated_data['add'])
+
 
 class ChatListSerializer(serializers.ModelSerializer):
     """Define serializer for chat model"""

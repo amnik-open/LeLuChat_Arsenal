@@ -6,11 +6,12 @@ from rest_framework import permissions, status
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from arsenal.serializers import RoomSerializerList, RoomSerializerDetail, ChatListSerializer
-from arsenal.serializers import ChatDetailSerializer
+from arsenal.serializers import ChatDetailSerializer, RoomMembershipSerializer
 from arsenal.models import Room
 from arsenal.permissions import IsLeluUser, IsReadOnlyMemberOrAdminMember
 from arsenal.permissions import IsGetAuthenticatedLeluUserOrPost
 from rpc_client.websiteuser_register import RpcClientWebUserReg
+
 
 log = logging.getLogger(__name__)
 
@@ -50,6 +51,30 @@ class RoomDetail(APIView):
         self.check_object_permissions(self.request, room)
         room.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class RoomMembership(APIView):
+    """Define API of membership of Room model"""
+
+    permission_classes = [permissions.IsAuthenticated, IsReadOnlyMemberOrAdminMember]
+
+    def patch(self, request, uid, format=None):
+        room = get_object_or_404(Room, room_uuid=uid)
+        self.check_object_permissions(self.request, room)
+        serializer = RoomMembershipSerializer(room, data=request.data)
+        if serializer.is_valid():
+            r = serializer.save(add=True)
+            return Response(RoomSerializerDetail(r).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, uid, format=None):
+        room = get_object_or_404(Room, room_uuid=uid)
+        self.check_object_permissions(self.request, room)
+        serializer = RoomMembershipSerializer(room, data=request.data)
+        if serializer.is_valid():
+            r = serializer.save(add=False)
+            return Response(RoomSerializerDetail(r).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ChatList(APIView):
     """Define API for chat model"""

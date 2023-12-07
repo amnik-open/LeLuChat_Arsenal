@@ -27,6 +27,7 @@ class RoomSerializerList(serializers.ModelSerializer):
                                    member_email=validated_data['member_email'],
                                    is_admin=validated_data['is_admin'])
 
+
 class RoomSerializerDetail(serializers.ModelSerializer):
     """Detail serializer for Room model"""
 
@@ -47,9 +48,8 @@ class RoomMembershipSerializer(serializers.ModelSerializer):
         model = Room
         fields = ["members"]
 
-    def update(self, room, validated_data):
-        print(validated_data)
-        return Room.objects.update_members(room=room,
+    def update(self, instance, validated_data):
+        return Room.objects.update_members(room=instance,
                                            members=validated_data['memberships'],
                                            add=validated_data['add'])
 
@@ -67,6 +67,7 @@ class ChatListSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Chat.objects.create(room=validated_data['room'], owner=validated_data['owner'],
                                    name=validated_data['name'])
+
 
 class ChatDetailSerializer(serializers.ModelSerializer):
     """Define serializer for Chat detail"""
@@ -88,3 +89,26 @@ class MessageGateSerializer(serializers.Serializer):
 
     room = serializers.UUIDField()
     chat = serializers.UUIDField()
+
+
+class ChatMessageSerializer(serializers.ModelSerializer):
+    """Define serializer for chat in message"""
+
+    chat_uuid = serializers.UUIDField()
+    class Meta:
+        model = Chat
+        fields = ['chat_uuid']
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    """Define serializer for message"""
+
+    chat = ChatMessageSerializer()
+    class Meta:
+        model = Message
+        fields = ['sender', 'text', 'chat', 'timestamp']
+
+    def create(self, validated_data):
+        return Message.objects.creat_by_chat_uuid(sender=validated_data['sender'],
+                                                  chat_uuid=validated_data['chat']['chat_uuid'],
+                                                  text=validated_data['text'])

@@ -2,7 +2,6 @@
 import uuid
 from django.db import models
 from rpc_client.membership import RpcClientMembership
-from arsenal.remote_authentication import RemoteUserType
 
 
 class RoomManager(models.Manager):
@@ -73,15 +72,6 @@ class Membership(models.Model):
         ]
 
 
-class ChatManager(models.Manager):
-    """Manager for Chat model"""
-
-    def create(self, room, owner, name):
-        chat = Chat(room=room, owner=owner, name=name)
-        chat.save()
-        return chat
-
-
 class Chat(models.Model):
     """Define Chat model"""
 
@@ -92,12 +82,23 @@ class Chat(models.Model):
     start_time = models.DateTimeField(auto_now_add=True)
 
 
+class MessageManager(models.Manager):
+    """Manager for Message model"""
+
+    def creat_by_chat_uuid(self, sender, chat_uuid, text):
+        chat = Chat.objects.get(chat_uuid=chat_uuid)
+        return Message.objects.create(sender=sender, chat=chat, text=text)
+
+
 class Message(models.Model):
+    """Define Message model"""
+
     sender = models.JSONField(blank=False, null=False)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
     text = models.CharField(max_length=200, blank=False)
-    attachment = models.FileField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    objects = MessageManager()
 
     class Meta:
         ordering = ('timestamp',)

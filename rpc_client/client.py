@@ -1,6 +1,6 @@
 """Define RPC Client"""
-import pika
 from abc import ABC, abstractmethod
+import pika
 from django.conf import settings
 
 

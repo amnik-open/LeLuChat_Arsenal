@@ -1,5 +1,6 @@
 """Define API views for arsenal app"""
-import json, logging
+import json
+import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
@@ -116,7 +117,7 @@ class MessagingGate(APIView):
     def post(self, request, format=None):
         serializer = MessageGateSerializer(data=request.data)
         if serializer.is_valid():
-            room = get_object_or_404(Room, room_uuid=request.data['room'])
+            get_object_or_404(Room, room_uuid=request.data['room'])
             chat = get_object_or_404(Chat, chat_uuid=request.data['chat'])
             self.check_object_permissions(self.request, chat)
             sender = json.dumps(request.user.to_message_sender_dict())

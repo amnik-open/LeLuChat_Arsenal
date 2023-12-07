@@ -1,5 +1,6 @@
 """Define RPC client for membership"""
-import pika, uuid
+import pika
+import uuid
 from rpc_client.client import RpcClient
 
 

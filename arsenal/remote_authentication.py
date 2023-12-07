@@ -23,7 +23,7 @@ class RemoteUser:
     @property
     def type(self):
         type = self.data["type"]
-        if type != RemoteUserType.LeluUser.name and type != RemoteUserType.WebsiteUser.name:
+        if type not in (RemoteUserType.LeluUser.name, RemoteUserType.WebsiteUser.name):
             raise ValueError(f"{type} type is not supported")
         return type
 

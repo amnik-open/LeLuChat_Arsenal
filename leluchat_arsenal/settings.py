@@ -56,7 +56,7 @@ class Dev(Configuration):
         "disable_existing_loggers": False,
         "formatters": {
             "verbose": {
-                "format": "{levelname} {asctime} {module} {message}",
+                "format": "{levelname} {asctime} {module}  {message}",
                 "style": "{",
             },
         },
@@ -164,6 +164,20 @@ class Dev(Configuration):
     })
 
     DEFAULT_PREFIX_CHAT_NAME = values.Value('user')
+
+    RABBITMQ = values.DictValue({
+        'default': {
+            'HOST': 'rabbitmq',
+            'PORT': '5672',
+            'VIRTUAL_HOST': '/',
+            'USER': 'user',
+            'PASSWORD': 'password',
+            'retry': 5,
+            'wait': 2,
+        }
+    })
+
+    CONSUME_MESSAGES = values.BooleanValue(False)
 
 
 class Prod(Dev):

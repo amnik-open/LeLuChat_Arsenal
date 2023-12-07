@@ -1,5 +1,6 @@
 """Define RPC client for registering WebsiteUser"""
-import pika, uuid
+import pika
+import uuid
 from rpc_client.client import RpcClient
 
 

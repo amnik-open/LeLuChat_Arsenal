@@ -1,0 +1,143 @@
+swagger: '2.0'
+info:
+  title: LeLuChat API
+  description: API for LeLuChat Engine
+  version: v1
+host: 127.0.0.1:8001
+schemes:
+- http
+basePath: /v1/arsenal
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  Token:
+    type: apiKey
+    name: Authorization
+    in: header
+  Basic:
+    type: basic
+security:
+- Basic: []
+- Token: []
+paths:
+  /chats/{uid}/messages/:
+    get:
+      operationId: chats_messages_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - chats
+    parameters:
+    - name: uid
+      in: path
+      required: true
+      type: string
+  /gates/messages/:
+    post:
+      operationId: gates_messages_create
+      description: Class for Messaging Gate API
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - gates
+    parameters: []
+  /rooms/:
+    get:
+      operationId: rooms_list
+      description: API for Room model
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - rooms
+    post:
+      operationId: rooms_create
+      description: API for Room model
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - rooms
+    parameters: []
+  /rooms/{uid}/:
+    get:
+      operationId: rooms_read
+      description: API for Room with detail
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - rooms
+    delete:
+      operationId: rooms_delete
+      description: API for Room with detail
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+      - rooms
+    parameters:
+    - name: uid
+      in: path
+      required: true
+      type: string
+  /rooms/{uid}/chats/:
+    get:
+      operationId: rooms_chats_list
+      description: Define API for chat model
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - rooms
+    post:
+      operationId: rooms_chats_create
+      description: Define API for chat model
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - rooms
+    parameters:
+    - name: uid
+      in: path
+      required: true
+      type: string
+  /rooms/{uid}/members/:
+    post:
+      operationId: rooms_members_create
+      description: Define API of membership of Room model
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - rooms
+    patch:
+      operationId: rooms_members_partial_update
+      description: Define API of membership of Room model
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - rooms
+    parameters:
+    - name: uid
+      in: path
+      required: true
+      type: string
+definitions: {}

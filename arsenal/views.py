@@ -8,10 +8,10 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from arsenal.serializers import RoomSerializerList, RoomSerializerDetail, ChatListSerializer
 from arsenal.serializers import ChatDetailSerializer, RoomMembershipSerializer
-from arsenal.serializers import MessageGateSerializer
+from arsenal.serializers import MessageGateSerializer, ChatMessageListSerializer
 from arsenal.models import Room, Chat
 from arsenal.permissions import IsLeluUser, IsReadOnlyMemberOrAdminMember, IsChatOwnerOrRoomMember
-from arsenal.permissions import IsGetAuthenticatedLeluUserOrPost
+from arsenal.permissions import IsGetAuthenticatedLeluUserOrPost, IsMemberChatRoomOrChatowner
 from rpc_client.websiteuser_register import RpcClientWebUserReg
 
 
@@ -107,6 +107,15 @@ class ChatList(APIView):
             s = ChatDetailSerializer(chat, context={'auth_token': user['auth_token']})
             return Response(s.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChatMessageList(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsMemberChatRoomOrChatowner]
+    def get(self, request, uid, format=None):
+        chat = get_object_or_404(Chat, chat_uuid=uid)
+        self.check_object_permissions(self.request, chat)
+        serializer = ChatMessageListSerializer(chat)
+        return Response(serializer.data)
 
 
 class MessagingGate(APIView):

@@ -112,3 +112,20 @@ class MessageSerializer(serializers.ModelSerializer):
         return Message.objects.creat_by_chat_uuid(sender=validated_data['sender'],
                                                   chat_uuid=validated_data['chat']['chat_uuid'],
                                                   text=validated_data['text'])
+
+class MessageListSerializer(serializers.ModelSerializer):
+    """Define serializer for message list"""
+
+    class Meta:
+        model = Message
+        fields = ['sender', 'text',  'timestamp']
+
+
+class ChatMessageListSerializer(serializers.ModelSerializer):
+    """Define serializer to list messages of chat"""
+
+    messages = MessageListSerializer(many=True)
+
+    class Meta:
+        model = Chat
+        exclude = ['id', 'room']

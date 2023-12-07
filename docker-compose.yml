@@ -1,10 +1,10 @@
 networks:
   auth:
-      name: auth
-      external: true
+    name: auth
+    external: true
 services:
   arsenal:
-    image: leluchat_auth-auth
+    build: .
     command: python manage.py runserver 0.0.0.0:8001
     container_name: leluchat_arsenal
     volumes:

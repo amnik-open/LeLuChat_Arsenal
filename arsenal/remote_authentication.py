@@ -27,7 +27,6 @@ class RemoteUser:
             raise ValueError(f"{type} type is not supported")
         return type
 
-
     @property
     def uuid(self):
         return self.data["uuid"]
@@ -38,7 +37,13 @@ class RemoteUser:
 
     @property
     def name(self):
-        return self.data.get("name")
+        return self.data["name"]
+
+    def to_message_sender_dict(self):
+        sender = {'uuid': self.uuid, 'type': self.type, 'identity': self.name}
+        if self.email:
+            sender['email'] = self.email
+        return sender
 
 
 class RemoteAuthClient:

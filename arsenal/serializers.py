@@ -1,6 +1,6 @@
 """Define serializers for arsenal app"""
 from rest_framework import serializers
-from arsenal.models import Room, Membership, Chat
+from arsenal.models import Room, Membership, Chat, Message
 
 
 class MembershipSerializer(serializers.ModelSerializer):
@@ -81,3 +81,10 @@ class ChatDetailSerializer(serializers.ModelSerializer):
 
     def get_auth_token(self, obj):
         return self.context.get('auth_token')
+
+
+class MessageGateSerializer(serializers.Serializer):
+    """Define serializer for messaging gate"""
+
+    room = serializers.UUIDField()
+    chat = serializers.UUIDField()

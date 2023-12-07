@@ -7,8 +7,9 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from arsenal.serializers import RoomSerializerList, RoomSerializerDetail, ChatListSerializer
 from arsenal.serializers import ChatDetailSerializer, RoomMembershipSerializer
-from arsenal.models import Room
-from arsenal.permissions import IsLeluUser, IsReadOnlyMemberOrAdminMember
+from arsenal.serializers import MessageGateSerializer
+from arsenal.models import Room, Chat
+from arsenal.permissions import IsLeluUser, IsReadOnlyMemberOrAdminMember, IsChatOwnerOrRoomMember
 from arsenal.permissions import IsGetAuthenticatedLeluUserOrPost
 from rpc_client.websiteuser_register import RpcClientWebUserReg
 
@@ -22,7 +23,7 @@ class RoomList(APIView):
     permission_classes = [permissions.IsAuthenticated, IsLeluUser]
 
     def get(self, request, format=None):
-        rooms = Room.objects.filter(membership__member_email=request.user.email)
+        rooms = Room.objects.filter(memberships__member_email=request.user.email)
         serializer = RoomSerializerList(rooms, many=True)
         return Response(serializer.data)
 
@@ -89,19 +90,35 @@ class ChatList(APIView):
 
     def post(self, request, uid):
         room = get_object_or_404(Room, room_uuid=uid)
-        try:
-            rpc = RpcClientWebUserReg()
-            user = json.loads(rpc.get_user())
-        except Exception as e:
-            log.exception(e)
-            return Response("RPC connection to leluchat_auth has problem",
-                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
         chat_num = room.chats.count()
         name = settings.DEFAULT_PREFIX_CHAT_NAME + str(chat_num + 1)
+        try:
+            rpc = RpcClientWebUserReg()
+            user = json.loads(rpc.call(name))
+        except Exception as e:
+            log.exception(e)
+            return Response("{msg: RPC connection to leluchat_auth has problem}",
+                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
         data = {'owner': user['uuid'], 'name': name}
         serializer = ChatListSerializer(data=data)
         if serializer.is_valid():
             chat = serializer.save(room=room)
             s = ChatDetailSerializer(chat, context={'auth_token': user['auth_token']})
             return Response(s.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MessagingGate(APIView):
+    """Class for Messaging Gate API"""
+
+    permission_classes = [permissions.IsAuthenticated, IsChatOwnerOrRoomMember]
+
+    def post(self, request, format=None):
+        serializer = MessageGateSerializer(data=request.data)
+        if serializer.is_valid():
+            room = get_object_or_404(Room, room_uuid=request.data['room'])
+            chat = get_object_or_404(Chat, chat_uuid=request.data['chat'])
+            self.check_object_permissions(self.request, chat)
+            sender = json.dumps(request.user.to_message_sender_dict())
+            return Response(sender)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

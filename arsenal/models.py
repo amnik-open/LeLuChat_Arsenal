@@ -10,7 +10,7 @@ class RoomManager(models.Manager):
     def create(self, **kwargs):
         room = Room(name=kwargs['name'], url=kwargs['url'])
         room.save()
-        membership = Membership(room=kwargs['room'], member_uuid=kwargs['member_uuid'],
+        membership = Membership(room=room, member_uuid=kwargs['member_uuid'],
                                 member_email=kwargs['member_email'],
                                 is_admin=kwargs['is_admin'])
         membership.save()
